@@ -19,17 +19,10 @@ PyMangaDL is a Python-based command-line tool that allows users to search for ma
 ## Requirements
 
 - Python 3.7 or higher
-- Required Python packages:
-  - `beautifulsoup4`
-  - `aiohttp`
-  - `questionary`
-  - `termcolor`
-  - `nest_asyncio`
-
 You can install the required packages using pip:
 
 ```bash
-pip install beautifulsoup4 aiohttp questionary termcolor nest_asyncio
+pip install -r requirements.txt
 ```
 
 ## Usage
