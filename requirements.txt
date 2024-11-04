@@ -1,0 +1,6 @@
+aiohttp
+beautifulsoup4
+nest_asyncio
+questionary
+tqdm
+termcolor
