@@ -26,6 +26,7 @@ headers = {
 
 url = "https://mangapill.com"
 
+# Clears the screen
 def clear_screen():
     """Clear the console screen."""
     if os.name == 'nt':  # For Windows
@@ -35,6 +36,8 @@ def clear_screen():
 
 clear_screen()
 
+
+# Searching manga
 async def search():
     """Search for an manga and display the results."""
     while True:
@@ -92,6 +95,7 @@ async def search():
         selected_link = results[selected_title]
         await manga_details(selected_link)
 
+# Print details about the manga
 async def manga_details(manga_url):
     async with aiohttp.ClientSession() as session:
         async with session.get(manga_url, headers=headers) as response:
@@ -125,6 +129,7 @@ async def manga_details(manga_url):
             clear_screen()
             print(colored("Download cancelled.", 'red'))
 
+# Fetch the chapter links
 async def fetch_chapter_links(manga_url, title):
     async with aiohttp.ClientSession() as session:
         async with session.get(manga_url, headers=headers) as response:
@@ -150,11 +155,12 @@ async def fetch_chapter_links(manga_url, title):
                 chapter_dir = os.path.join("downloaded_manga", title, "Chapter " + chapter)
                 os.makedirs(chapter_dir, exist_ok=True)
                 print(f"Downloading chapter {chapter}...")
-                await download_chapter_images(session, chapters_dict[chapter], chapter_dir)
+                await fetch_image_links(session, chapters_dict[chapter], chapter_dir)
             else:
                 print(colored(f"Chapter {chapter} not available. Skipping.", 'red'))
 
-async def download_chapter_images(session, chapter_url, chapter_dir):
+# Get the links of the image
+async def fetch_image_links(session, chapter_url, chapter_dir):
     async with session.get(chapter_url, headers=headers) as response:
         html = await response.text()
         soup = BeautifulSoup(html, 'html.parser')
@@ -164,6 +170,7 @@ async def download_chapter_images(session, chapter_url, chapter_dir):
             img_url = page['data-src']
             await download_image(session, img_url, os.path.join(chapter_dir, f'page_{index + 1}.jpeg'))
 
+# Downloads the image/pages of the chapter
 async def download_image(session, img_url, file_path):
     async with session.get(img_url, headers=headers) as response:
         if response.status == 200:
@@ -173,7 +180,7 @@ async def download_image(session, img_url, file_path):
         else:
             print(f"Failed to download image from {img_url}")
 
-# Usage
+# Starting
 async def main():
     """Initiate the manga search."""
     await search()
