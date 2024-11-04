@@ -101,12 +101,12 @@ async def manga_details(manga_url):
         jp_name = soup.find('h1', {"class": "font-bold text-lg md:text-2xl"})
         eng_name = soup.find('div', {"class": "text-sm text-secondary"})
         summary = soup.find('p', {"class": "text-sm text-secondary"})
-        type = soup.find('label', class_='text-secondary', string='Type').find_next('div')
-        status = soup.find('label', class_='text-secondary', string='Status').find_next('div')
-        year = soup.find('label', class_='text-secondary', string='Year').find_next('div')
-        genres = [a.get_text() for a in soup.find('label', class_='text-secondary', string='Genres')
+        type = soup.find('label', {"class":'text-secondary'}, string='Type').find_next('div')
+        status = soup.find('label',{"class":'text-secondary'}, string='Status').find_next('div')
+        year = soup.find('label', {"class":'text-secondary'}, string='Year').find_next('div')
+        genres = [a.get_text() for a in soup.find('label', {"class":'text-secondary'}, string='Genres')
                   .find_all_next('a', {"class": "text-sm mr-1 text-brand"})]
-        total_chapter = soup.find('div', class_='my-3 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6').find_next('a')
+        total_chapter = soup.find('div', {"class":'my-3 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6'}).find_next('a')
 
         print(f"\033[1mTitle: {jp_name.get_text() if jp_name else 'None'}\033[0m")
         print(f"\033[1mEnglish Title: {eng_name.get_text() if eng_name else 'None'}\033[0m \n")
@@ -140,7 +140,6 @@ async def fetch_chapter_links(manga_url, title):
             chapter_link = a['href']
             full_link = f"{url}{chapter_link}"
             chapters_dict[chapter_number] = full_link
-            print(chapters_dict)
 
         # Ask user which chapters to download
         chapter_numbers = questionary.text("Enter the chapters you want to download (space-separated): ").ask()
