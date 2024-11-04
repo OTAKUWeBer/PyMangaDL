@@ -19,7 +19,8 @@ PyMangaDL is a Python-based command-line tool that allows users to search for ma
 ## Requirements
 
 - Python 3.7 or higher
-You can install the required packages using pip:
+
+- Required packages using pip:
 
 ```bash
 pip install -r requirements.txt
