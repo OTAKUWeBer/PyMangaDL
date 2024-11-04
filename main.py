@@ -36,7 +36,7 @@ def clear_screen():
 clear_screen()
 
 async def search():
-    """Search for an anime and display the results."""
+    """Search for an manga and display the results."""
     while True:
         results = {}
 
