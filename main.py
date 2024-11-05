@@ -155,7 +155,7 @@ async def fetch_chapter_links(manga_url, title):
 
         # Ask user if they want to download as PDF or JPEG
         download_format = questionary.select(
-            "Do you want to download the chapters as PDF or JPEG?",
+            "Do you want to download the chapters as PDF or JPEG?: ",
             choices=["PDF", "JPEG"],
             style=questionary.Style([
                 ('selected', 'fg:yellow'),
