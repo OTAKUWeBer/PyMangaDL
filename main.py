@@ -7,6 +7,7 @@ import subprocess
 from termcolor import colored
 import nest_asyncio
 from tqdm import tqdm
+from PIL import Image
 from reportlab.pdfgen import canvas
 
 nest_asyncio.apply()
@@ -209,14 +210,32 @@ async def download_image(session, img_url, file_path, pbar):
             print(f"Failed to download image from {img_url}")
 
 def create_pdf(image_paths, pdf_path):
-    c = canvas.Canvas(pdf_path)
-    for image_path in image_paths:
-        c.drawImage(image_path, 0, 0, width=600, height=800)  # Adjust size as needed
-        c.showPage()  # Create a new page for each image
-    c.save()
+    if not image_paths:
+        print("No images provided.")
+        return
 
+    # Create a canvas object
+    c = canvas.Canvas(pdf_path)
+
+    for image_path in image_paths:
+        try:
+            # Open the image to get its dimensions
+            with Image.open(image_path) as img:
+                width, height = img.size
+
+            # Set the page size to the image size
+            c.setPageSize((width, height))
+
+            # Draw the image without resizing
+            c.drawImage(image_path, 0, 0, width=width, height=height)
+            c.showPage()  # Create a new page for each image
+
+        except Exception as e:
+            print(f"Error processing {image_path}: {e}")
+
+    c.save()
     print(f"PDF created: {pdf_path}")
-    
+
     # Delete image files after creating the PDF
     for image_path in image_paths:
         try:
