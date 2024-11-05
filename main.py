@@ -7,6 +7,8 @@ import subprocess
 from termcolor import colored
 import nest_asyncio
 from tqdm import tqdm
+from PIL import Image
+from reportlab.pdfgen import canvas
 
 nest_asyncio.apply()
 
@@ -131,6 +133,7 @@ async def manga_details(manga_url):
             print(colored("Download cancelled.", 'red'))
 
 # Fetch the chapter links
+
 async def fetch_chapter_links(manga_url, title):
     async with aiohttp.ClientSession() as session:
         async with session.get(manga_url, headers=headers) as response:
@@ -151,12 +154,30 @@ async def fetch_chapter_links(manga_url, title):
         chapter_numbers = questionary.text("Enter the chapters you want to download (space-separated): ").ask()
         chapters_to_download = chapter_numbers.split()
 
+        # Ask user if they want to download as PDF or JPEG
+        download_format = questionary.select(
+            "Do you want to download the chapters as PDF or JPEG?",
+            choices=["PDF", "JPEG"],
+            style=questionary.Style([
+                ('selected', 'fg:yellow'),
+                ('pointer', 'fg:yellow'),
+                ('highlighted', 'fg:yellow'),
+                ('selected', 'bg:yellow fg:black'),
+            ])
+        ).ask()
+
         for chapter in chapters_to_download:
             if chapter in chapters_dict:
                 chapter_dir = os.path.join("downloaded_manga", title, "Chapter " + chapter)
                 os.makedirs(chapter_dir, exist_ok=True)
                 print(f"Downloading chapter {chapter}...")
-                await fetch_image_links(session, chapters_dict[chapter], chapter_dir)
+                image_paths = await fetch_image_links(session, chapters_dict[chapter], chapter_dir)
+
+                if download_format == "PDF":
+                    pdf_path = os.path.join(chapter_dir, f'Chapter_{chapter}.pdf')
+                    create_pdf(image_paths, pdf_path)
+                else:
+                    print(f"Images downloaded to {chapter_dir}.")
             else:
                 print(colored(f"Chapter {chapter} not available. Skipping.", 'red'))
 
@@ -168,6 +189,7 @@ async def fetch_image_links(session, chapter_url, chapter_dir):
 
         pages = soup.find_all('img', class_='js-page')
         total_pages = len(pages)
+        image_paths = []
 
         # Create a tqdm progress bar for the entire chapter
         with tqdm(total=total_pages, desc='Downloading Images', unit='image') as pbar:
@@ -175,9 +197,12 @@ async def fetch_image_links(session, chapter_url, chapter_dir):
             for index, page in enumerate(pages):
                 img_url = page['data-src']
                 file_path = os.path.join(chapter_dir, f'page_{index + 1}.jpeg')
+                image_paths.append(file_path)  # Store the image path for PDF creation
                 tasks.append(download_image(session, img_url, file_path, pbar))
 
             await asyncio.gather(*tasks)
+
+        return image_paths  # Return the list of image paths
 
 async def download_image(session, img_url, file_path, pbar):
     async with session.get(img_url, headers=headers) as response:
@@ -187,6 +212,14 @@ async def download_image(session, img_url, file_path, pbar):
             pbar.update(1)  # Update the progress bar for each image downloaded
         else:
             print(f"Failed to download image from {img_url}")
+
+def create_pdf(image_paths, pdf_path):
+    c = canvas.Canvas(pdf_path)
+    for image_path in image_paths:
+        c.drawImage(image_path, 0, 0, width=600, height=800)  # Adjust size as needed
+        c.showPage()  # Create a new page for each image
+    c.save()
+    print(f"PDF created: {pdf_path}")
 
 # Starting
 async def main():

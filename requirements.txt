@@ -4,3 +4,5 @@ nest_asyncio
 questionary
 tqdm
 termcolor
+Pillow
+reportlab
