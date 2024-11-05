@@ -6,6 +6,7 @@ import questionary
 import subprocess
 from termcolor import colored
 import nest_asyncio
+from tqdm import tqdm
 
 nest_asyncio.apply()
 
@@ -119,7 +120,7 @@ async def manga_details(manga_url):
         print(f"\033[1mStatus:\033[0m {status.get_text() if status else 'None'}")
         print(f"\033[1mYear:\033[0m {year.get_text() if year else 'None'}")
         print(f"\033[1mGenres:\033[0m {', '.join(genres) if genres else 'None'}")
-        print(f"\033[1mTotal Chapters:\033[0m {total_chapter.get_text() if total_chapter else 'None'}")
+        print(f"\033[1mTotal Chapters:\033[0m {total_chapter.get_text().split(" ")[-1] if total_chapter else 'None'}")
 
         # Ask user if they want to download chapters
         download_choice = questionary.confirm("Download chapters from this manga?").ask()
@@ -166,17 +167,24 @@ async def fetch_image_links(session, chapter_url, chapter_dir):
         soup = BeautifulSoup(html, 'html.parser')
 
         pages = soup.find_all('img', class_='js-page')
-        for index, page in enumerate(pages):
-            img_url = page['data-src']
-            await download_image(session, img_url, os.path.join(chapter_dir, f'page_{index + 1}.jpeg'))
+        total_pages = len(pages)
 
-# Downloads the image/pages of the chapter
-async def download_image(session, img_url, file_path):
+        # Create a tqdm progress bar for the entire chapter
+        with tqdm(total=total_pages, desc='Downloading Images', unit='image') as pbar:
+            tasks = []
+            for index, page in enumerate(pages):
+                img_url = page['data-src']
+                file_path = os.path.join(chapter_dir, f'page_{index + 1}.jpeg')
+                tasks.append(download_image(session, img_url, file_path, pbar))
+
+            await asyncio.gather(*tasks)
+
+async def download_image(session, img_url, file_path, pbar):
     async with session.get(img_url, headers=headers) as response:
         if response.status == 200:
             with open(file_path, 'wb') as file:
                 file.write(await response.read())
-            print(f"Downloaded: {file_path}")
+            pbar.update(1)  # Update the progress bar for each image downloaded
         else:
             print(f"Failed to download image from {img_url}")
 
