@@ -13,9 +13,7 @@ nest_asyncio.apply()
 
 # Define headers for the requests
 headers = {
-    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:131.0) Gecko/20100101 Firefox/131.0',
     'Accept': 'image/avif,image/webp,image/png,image/svg+xml,image/*;q=0.8,*/*;q=0.5',
-    'Accept-Language': 'en-US,en;q=0.5',
     'DNT': '1',
     'Sec-GPC': '1',
     'Connection': 'keep-alive',
