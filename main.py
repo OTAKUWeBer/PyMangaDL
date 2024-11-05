@@ -106,7 +106,7 @@ async def manga_details(manga_url):
         soup = BeautifulSoup(html, "html.parser")
         jp_name = soup.find('h1', {"class": "font-bold text-lg md:text-2xl"})
         eng_name = soup.find('div', {"class": "text-sm text-secondary"})
-        summary = soup.find('p', {"class": "text-sm text-secondary"})
+        summary = soup.find('p', {"class": "text-sm text--secondary"})
         type = soup.find('label', {"class":'text-secondary'}, string='Type').find_next('div')
         status = soup.find('label',{"class":'text-secondary'}, string='Status').find_next('div')
         year = soup.find('label', {"class":'text-secondary'}, string='Year').find_next('div')
@@ -114,15 +114,19 @@ async def manga_details(manga_url):
                   .find_all_next('a', {"class": "text-sm mr-1 text-brand"})]
         total_chapter = soup.find('div', {"class":'my-3 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6'}).find_next('a')
 
-        print(f"\033[1mTitle: {jp_name.get_text() if jp_name else 'None'}\033[0m")
-        print(f"\033[1mEnglish Title: {eng_name.get_text() if eng_name else 'None'}\033[0m \n")
-        print(f"\033[1mSummary:\033[0m {summary.get_text() if summary else 'None'}")
-        print(f"\033[1mType:\033[0m {type.get_text() if type else 'None'}")
-        print(f"\033[1mStatus:\033[0m {status.get_text() if status else 'None'}")
-        print(f"\033[1mYear:\033[0m {year.get_text() if year else 'None'}")
-        print(f"\033[1mGenres:\033[0m {', '.join(genres) if genres else 'None'}")
-        print(f"\033[1mTotal Chapters:\033[0m {total_chapter.get_text().split(" ")[-1] if total_chapter else 'None'}")
+        print(f"\n\033[1mTitle:\033[0m {jp_name.get_text() if jp_name else 'None'}")
+        print(f"\033[1mEnglish Title:\033[0m {eng_name.get_text() if eng_name else 'None'}\n")
 
+        print(f"\033[1mSummary:\033[0m")
+        print(f"{summary.get_text() if summary else 'None'}\n")
+
+        print(f"\033[1mDetails:\033[0m")
+        print(f"- \033[1mType:\033[0m {type.get_text() if type else 'None'}")
+        print(f"- \033[1mStatus:\033[0m {status.get_text() if status else 'None'}")
+        print(f"- \033[1mYear:\033[0m {year.get_text() if year else 'None'}")
+        print(f"- \033[1mGenres:\033[0m {', '.join(genres) if genres else 'None'}")
+        print(f"- \033[1mTotal Chapters:\033[0m {total_chapter.get_text().split(' ')[-1] if total_chapter else 'None'}\n")
+        
         # Ask user if they want to download chapters
         download_choice = questionary.confirm("Download chapters from this manga?").ask()
         if download_choice:
