@@ -7,7 +7,6 @@ import subprocess
 from termcolor import colored
 import nest_asyncio
 from tqdm import tqdm
-from PIL import Image
 from reportlab.pdfgen import canvas
 
 nest_asyncio.apply()
