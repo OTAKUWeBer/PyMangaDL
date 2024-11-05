@@ -57,10 +57,3 @@ Contributions are welcome! If you have suggestions for improvements or new featu
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- [Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/) for HTML parsing.
-- [aiohttp](https://docs.aiohttp.org/en/stable/) for asynchronous HTTP requests.
-- [Questionary](https://questionary.readthedocs.io/en/latest/) for interactive command-line prompts.
-- [Termcolor](https://pypi.org/project/termcolor/) for colored terminal output.
