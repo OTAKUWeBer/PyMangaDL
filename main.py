@@ -14,14 +14,8 @@ nest_asyncio.apply()
 # Define headers for the requests
 headers = {
     'Accept': 'image/avif,image/webp,image/png,image/svg+xml,image/*;q=0.8,*/*;q=0.5',
-    'DNT': '1',
-    'Sec-GPC': '1',
     'Connection': 'keep-alive',
-    'Referer': 'https://mangapill.com/',
-    'Sec-Fetch-Dest': 'image',
-    'Sec-Fetch-Mode': 'no-cors',
-    'Sec-Fetch-Site': 'cross-site',
-    'Priority': 'u=5, i',
+    'Referer': 'https://mangapill.com/'
 }
 
 url = "https://mangapill.com"
