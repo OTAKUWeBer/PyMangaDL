@@ -218,7 +218,15 @@ def create_pdf(image_paths, pdf_path):
         c.drawImage(image_path, 0, 0, width=600, height=800)  # Adjust size as needed
         c.showPage()  # Create a new page for each image
     c.save()
+
     print(f"PDF created: {pdf_path}")
+    
+    # Delete image files after creating the PDF
+    for image_path in image_paths:
+        try:
+            os.remove(image_path)
+        except Exception as e:
+            print(f"Failed to delete {image_path}: {e}")
 
 # Starting
 async def main():
