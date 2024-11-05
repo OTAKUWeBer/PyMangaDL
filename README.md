@@ -15,6 +15,8 @@ PyMangaDL is a Python-based command-line tool that allows users to search for ma
   - Total chapters
 - Download selected chapters and their images.
 - User-friendly command-line interface with prompts.
+- **Progress Bar**: Display a progress bar during downloads.
+- **Download Options**: Choose to download chapters as PDF or JPEG.
 
 ## Requirements
 
