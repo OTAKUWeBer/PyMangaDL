@@ -9,6 +9,7 @@ import nest_asyncio
 from tqdm import tqdm
 from PIL import Image
 from reportlab.pdfgen import canvas
+import base64
 
 nest_asyncio.apply()
 
@@ -153,7 +154,7 @@ async def fetch_chapter_links(manga_url, title):
         # Ask user if they want to download as PDF or JPEG
         download_format = questionary.select(
             "Do you want to download the chapters as PDF or JPEG?: ",
-            choices=["PDF", "JPEG"],
+            choices=["PDF", "HTML", "JPEG"],
             style=questionary.Style([
                 ('selected', 'fg:yellow'),
                 ('pointer', 'fg:yellow'),
@@ -172,6 +173,9 @@ async def fetch_chapter_links(manga_url, title):
                 if download_format == "PDF":
                     pdf_path = os.path.join(chapter_dir, f'Chapter_{chapter}.pdf')
                     create_pdf(image_paths, pdf_path)
+                elif download_format == "HTML":
+                    html_path = os.path.join(chapter_dir, f'Chapter_{chapter}.html')
+                    create_html(image_paths, html_path)
                 else:
                     print(f"Images downloaded to {chapter_dir}.")
             else:
@@ -237,6 +241,84 @@ def create_pdf(image_paths, pdf_path):
     print(f"PDF created: {pdf_path}")
 
     # Delete image files after creating the PDF
+    for image_path in image_paths:
+        try:
+            os.remove(image_path)
+        except Exception as e:
+            print(f"Failed to delete {image_path}: {e}")
+            
+
+def create_html(image_paths, html_path):
+    if not image_paths:
+        print("No images provided.")
+        return
+
+    # Start creating the HTML content
+    html_content = """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Manga Reader</title>
+        <style>
+            /* Basic reset */
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f9;
+                color: #333;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-direction: column;
+            }
+            
+            /* Container styling */
+            .manga-container {
+                width: 100%;
+                max-width: 75%; /* Limits width to 75% of the screen */
+                margin: auto;
+            }
+
+            /* Image styling */
+            .manga-container img {
+                width: 100%;
+                display: block;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="manga-container">
+    """
+
+    # Convert each image to base64 and add to the HTML content
+    for image_path in image_paths:
+        try:
+            with open(image_path, "rb") as image_file:
+                base64_str = base64.b64encode(image_file.read()).decode('utf-8')
+                html_content += f'<img src="data:image/jpeg;base64,{base64_str}" alt="Manga page">\n'
+        except Exception as e:
+            print(f"Error processing {image_path}: {e}")
+
+    # Close the HTML tags
+    html_content += """
+        </div>
+    </body>
+    </html>
+    """
+
+    # Write the HTML content to the specified file
+    with open(html_path, "w", encoding="utf-8") as file:
+        file.write(html_content)
+    print(f"HTML created: {html_path}")
+
+    # Delete image files after creating the HTML
     for image_path in image_paths:
         try:
             os.remove(image_path)
