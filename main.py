@@ -313,9 +313,16 @@ def create_html(image_paths, html_path):
     """
 
     # Write the HTML content to the specified file
-    with open(html_path, "w", encoding="utf-8") as file:
-        file.write(html_content)
-    print(f"HTML created: {html_path}")
+    try:
+        with open(html_path, "w", encoding="utf-8") as file:
+            file.write(html_content)
+        print(f"HTML created: {html_path}")
+    except PermissionError:
+        print(f"Permission denied when writing to {html_path}")
+        return
+    except Exception as e:
+        print(f"Failed to write HTML file {html_path}: {e}")
+        return
 
     # Delete image files after creating the HTML
     for image_path in image_paths:
