@@ -56,8 +56,7 @@ async def search():
                 html = await response.text()
 
         soup = BeautifulSoup(html, "html.parser")
-        manga_list = soup.find_all("div", {"class": "flex flex-col justify-end"})  # Adjusted to find the correct div
-
+        manga_list = soup.find_all("div", {"class": "flex flex-col justify-end"})
         for div in manga_list:
             title_tag = div.find("a", class_="mb-2")  # Find the title link
             if title_tag:
