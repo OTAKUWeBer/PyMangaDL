@@ -71,7 +71,7 @@ async def search():
 
         choices = list(results.keys())
         selected_choice = questionary.select(
-            "Select manga to see details, or 'q' to quit:",
+            "Select manga to see details, or '--quit' to quit:",
             choices=choices + ["--quit"],
             style=questionary.Style([
                 ('selected', 'fg:yellow'),
@@ -81,10 +81,10 @@ async def search():
             ])
         ).ask()
 
-        if selected_choice == 'q' or selected_choice == "--quit":
+        if selected_choice == "--quit":
             clear_screen()
-            print(colored("Exiting manga search.", 'red'))
-            return
+            print(colored("Cancelled previous search.", 'red'))
+            continue
 
         selected_title = selected_choice
         selected_link = results[selected_title]
