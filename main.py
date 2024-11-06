@@ -32,6 +32,7 @@ def clear_screen():
 
 clear_screen()
 
+
 # Searching manga
 async def search():
     """Search for an manga and display the results."""
@@ -55,13 +56,13 @@ async def search():
                 html = await response.text()
 
         soup = BeautifulSoup(html, "html.parser")
-        manga_list = soup.find_all("div", {"class": "flex flex-col justify-end"}) 
+        manga_list = soup.find_all("div", {"class": "flex flex-col justify-end"})  # Adjusted to find the correct div
 
         for div in manga_list:
-            title_tag = div.find("a", class_="mb-2") 
+            title_tag = div.find("a", class_="mb-2")  # Find the title link
             if title_tag:
-                title = title_tag.find("div").text.strip()
-                link = title_tag.get("href") 
+                title = title_tag.find("div").text.strip()  # Get the text only of the title
+                link = title_tag.get("href")  # Get the href attribute
                 results[title] = f"{url}{link}"
 
         if not results:
@@ -129,6 +130,7 @@ async def manga_details(manga_url):
             print(colored("Download cancelled.", 'red'))
 
 # Fetch the chapter links
+
 async def fetch_chapter_links(manga_url, title):
     async with aiohttp.ClientSession() as session:
         async with session.get(manga_url, headers=headers) as response:
